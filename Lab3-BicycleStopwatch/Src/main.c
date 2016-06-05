@@ -56,7 +56,17 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+void uart_init(UART_HandleTypeDef* UartHandle){
+	UartHandle->Instance = USART1;
+	UartHandle->Init.BaudRate = 9600;
+	UartHandle->Init.WordLength = UART_WORDLENGTH_8B;
+	UartHandle->Init.StopBits = UART_STOPBITS_1;
+	UartHandle->Init.Parity = UART_PARITY_NONE;
+	UartHandle->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	UartHandle->Init.Mode = UART_MODE_TX_RX;
+	
+	HAL_UART_Init(UartHandle);
+}
 /* USER CODE END 0 */
 
 int main(void)
@@ -79,7 +89,8 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-
+	UART_HandleTypeDef UartHandle;
+	uart_init(&UartHandle);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -89,6 +100,9 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+		HAL_UART_Transmit(&UartHandle,(uint8_t*)"hello\r\n", 7, 500);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_11);
+		HAL_Delay(500);
 
   }
   /* USER CODE END 3 */
