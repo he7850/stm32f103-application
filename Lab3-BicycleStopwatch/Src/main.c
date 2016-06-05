@@ -95,15 +95,23 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	int cnt=0;
+	GPIO_PinState state;
   while (1)
   {
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-		HAL_UART_Transmit(&UartHandle,(uint8_t*)"hello\r\n", 7, 500);
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_11);
-		HAL_Delay(500);
-
+//		HAL_UART_Transmit(&UartHandle,(uint8_t*)"hello\r\n", 7, 500);
+//		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_11);
+//		HAL_Delay(500);
+		state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11);
+		if(state==GPIO_PIN_RESET){	//RESET means press
+			HAL_UART_Transmit(&UartHandle,(uint8_t*)"pressed\r\n", 9, 500);
+		}else{
+			HAL_UART_Transmit(&UartHandle,(uint8_t*)"released\r\n", 10, 500);
+		}
+		HAL_Delay(200);
   }
   /* USER CODE END 3 */
 
@@ -171,12 +179,14 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11|GPIO_PIN_12, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11|GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA11 PA12 */
   GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  //GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }

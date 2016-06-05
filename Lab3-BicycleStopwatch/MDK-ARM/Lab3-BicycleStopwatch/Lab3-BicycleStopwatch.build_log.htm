@@ -26,11 +26,13 @@ Project File Date:  06/05/2016
 
 <h2>Output:</h2>
 Build target 'Lab3-BicycleStopwatch'
-compiling stm32f1xx_hal_msp.c...
+compiling main.c...
+../Src/main.c(98): warning:  #177-D: variable "cnt" was declared but never referenced
+        int cnt=0;
+../Src/main.c: 1 warning, 0 errors
 linking...
-Program Size: Code=4772 RO-data=284 RW-data=8 ZI-data=1088  
-FromELF: creating hex file...
-"Lab3-BicycleStopwatch\Lab3-BicycleStopwatch.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=4776 RO-data=284 RW-data=8 ZI-data=1088  
+"Lab3-BicycleStopwatch\Lab3-BicycleStopwatch.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -54,26 +56,14 @@ Erase Done.
 Programming Done.
 Verify OK.
 Application running ...
-
+ file:   CMSIS\UserCodeTemplates\ARM\ITM_Retarget.c
+Load "Lab3-BicycleStopwatch\\Lab3-BicycleStopwatch.axf" 
+Erase Done.
 Programming Done.
 Verify OK.
 Application running ...
-b3-BicycleStopwatch\MDK-ARM\RTE
-  D:\Keil_v5\ARM\PACK\ARM\CMSIS\4.2.0\CMSIS\Include
-  D:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.1.0
-
-<h2>Collection of Component Files used:</h2>
-
-   * Component: ARM::CMSIS:CORE:3.40.0
-      Source file:   CMSIS\UserCodeTemplates\ARM\ITM_Retarget.c
-Load "Lab3-BicycleStopwatch\\Lab3-BicycleStopwatch.axf" 
+opwatch\\Lab3-BicycleStopwatch.axf" 
 Erase Done.
 Programming Done.
 Verify OK.
-rithm found for: 08000000H - 08001227H
-Erase skipped!
-Error: Flash Download failed  -  "Cortex-M3"
-Load "Lab3-BicycleStopwatch\\Lab3-BicycleStopwatch.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
+Application running ...
