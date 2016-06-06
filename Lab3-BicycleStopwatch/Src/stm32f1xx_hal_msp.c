@@ -127,7 +127,12 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 }
 
 /* USER CODE BEGIN 1 */
-
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim){
+	__TIM3_CLK_ENABLE();
+}
+void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim){
+	__TIM3_CLK_DISABLE();
+}
 /* USER CODE END 1 */
 
 /**

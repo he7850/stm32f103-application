@@ -39,7 +39,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
-
+TIM_HandleTypeDef TIM_Handle;
+int flag = 0,TIMflag = 0;
+int loopCount = 0,lastLoopCount = 0,totalSecond = 0;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
@@ -67,6 +69,68 @@ void uart_init(UART_HandleTypeDef* UartHandle){
 	
 	HAL_UART_Init(UartHandle);
 }
+void NVIC_Init(){
+    // enable IT
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn,0,0);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+}
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin!=GPIO_PIN_12){
+		UNUSED(GPIO_Pin);
+  }else{
+		if(flag==0){
+	    flag=1;
+	    loopCount++;
+		}
+  }
+}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+  TIMflag = 1;
+	totalSecond++;
+}
+
+void TIM_init(){
+	TIM_Handle.Instance = TIM3;
+	TIM_Handle.Init.Prescaler = 8000;
+	TIM_Handle.Init.CounterMode = TIM_COUNTERMODE_UP;
+	TIM_Handle.Init.Period = 199;	//200ms
+	
+	HAL_NVIC_SetPriority(TIM3_IRQn,0,0);
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	
+	HAL_TIM_Base_Init(&TIM_Handle);
+	HAL_TIM_Base_Start_IT(&TIM_Handle);
+}
+//int __io_putchar(uint8_t ch){
+//	return HAL_UART_Transmit(&huart1,(uint8_t*)&ch, 1, 500);
+//}
+//int fputc(int ch, FILE *f) {
+//	if(f==stdout){
+//		return HAL_UART_Transmit(&huart1,(uint8_t*)&ch, 1, 500);
+//	}else{
+//		return 0;
+//	}
+//}
+#ifdef __GNUC__
+  /* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+     set to 'Yes') calls __io_putchar() */
+  #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+  #define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+/**
+  * @brief  Retargets the C library printf function to the USART.
+  * @param  None
+  * @retval None
+  */
+PUTCHAR_PROTOTYPE
+{
+  /* Place your implementation of fputc here */
+  /* e.g. write a character to the EVAL_COM1 and Loop until the end of transmission */
+  HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF); 
+
+  return ch;
+}
 /* USER CODE END 0 */
 
 int main(void)
@@ -87,15 +151,16 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-
+	
   /* USER CODE BEGIN 2 */
 	UART_HandleTypeDef UartHandle;
 	uart_init(&UartHandle);
+	NVIC_Init();
+	TIM_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	int cnt=0;
 	GPIO_PinState state;
   while (1)
   {
@@ -105,13 +170,37 @@ int main(void)
 //		HAL_UART_Transmit(&UartHandle,(uint8_t*)"hello\r\n", 7, 500);
 //		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_11);
 //		HAL_Delay(500);
-		state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11);
-		if(state==GPIO_PIN_RESET){	//RESET means press
-			HAL_UART_Transmit(&UartHandle,(uint8_t*)"pressed\r\n", 9, 500);
-		}else{
-			HAL_UART_Transmit(&UartHandle,(uint8_t*)"released\r\n", 10, 500);
+		
+//		state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11);
+//		if(state==GPIO_PIN_RESET){	//RESET means press
+//			//HAL_UART_Transmit(&UartHandle,(uint8_t*)"pressed\r\n", 9, 500);
+//			printf("pressed\r\n");
+//		}else{
+//			//HAL_UART_Transmit(&UartHandle,(uint8_t*)"released\r\n", 10, 500);
+//			printf("released\r\n");
+//		}
+//		HAL_Delay(200);
+		
+//		if (flag == 1){
+//        flag = 0;    
+//				printf("pressed\r\n");
+//    }
+//		printf("flag=%d,count=%d\r\n",flag,count);
+//		HAL_Delay(500);
+		
+		if (flag == 1){
+        flag = 0;    
+    }
+		if (TIMflag == 1){
+        TIMflag = 0;
+				if(totalSecond%5==0){
+					printf("speed = %f\t", (loopCount-lastLoopCount)*1.2*3.14);
+					lastLoopCount = loopCount;
+					printf("total distance: %f\r\n", loopCount*1.2*3.14);
+				}
 		}
 		HAL_Delay(200);
+			
   }
   /* USER CODE END 3 */
 
@@ -182,12 +271,19 @@ void MX_GPIO_Init(void)
   //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_11|GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PA11 PA12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
-  //GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  //GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Pin = GPIO_PIN_11;
+//  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+//  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	
+  GPIO_InitStruct.Pin = GPIO_PIN_12;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 }
 

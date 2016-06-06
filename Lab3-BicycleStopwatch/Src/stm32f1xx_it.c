@@ -162,6 +162,12 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
-
+void EXTI15_10_IRQHandler(){
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_12);
+}
+void TIM3_IRQHandler(){
+	extern TIM_HandleTypeDef TIM_Handle;
+	HAL_TIM_IRQHandler(&TIM_Handle);
+}
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
