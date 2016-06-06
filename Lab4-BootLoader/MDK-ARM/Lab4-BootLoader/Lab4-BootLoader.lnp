@@ -1,0 +1,23 @@
+--cpu Cortex-M3
+"lab4-bootloader\startup_stm32f103xb.o"
+"lab4-bootloader\system_stm32f1xx.o"
+"lab4-bootloader\stm32f1xx_hal_gpio.o"
+"lab4-bootloader\stm32f1xx_hal_flash.o"
+"lab4-bootloader\stm32f1xx_hal_tim_ex.o"
+"lab4-bootloader\stm32f1xx_hal_uart.o"
+"lab4-bootloader\stm32f1xx_hal_rcc_ex.o"
+"lab4-bootloader\stm32f1xx_hal_flash_ex.o"
+"lab4-bootloader\stm32f1xx_hal_cortex.o"
+"lab4-bootloader\stm32f1xx_hal_tim.o"
+"lab4-bootloader\stm32f1xx_hal_dma.o"
+"lab4-bootloader\stm32f1xx_hal_pwr.o"
+"lab4-bootloader\stm32f1xx_hal.o"
+"lab4-bootloader\stm32f1xx_hal_rcc.o"
+"lab4-bootloader\main.o"
+"lab4-bootloader\stm32f1xx_hal_msp.o"
+"lab4-bootloader\stm32f1xx_it.o"
+--library_type=microlib --strict --scatter "Lab4-BootLoader\Lab4-BootLoader.sct"
+
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "Lab4-BootLoader.map" -o Lab4-BootLoader\Lab4-BootLoader.axf
